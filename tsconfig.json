@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "esnext",
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": "src",
+    "jsx": "react"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
