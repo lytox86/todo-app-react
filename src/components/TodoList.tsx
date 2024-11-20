@@ -18,7 +18,9 @@ const TodoList: React.FC<TodoListProps> = ({
   setFilter,
 }) => {
   const [newTask, setNewTask] = useState("");
-  const [activeFilter, setActiveFilter] = useState<"all" | "completed" | "pending">("all");
+  const [activeFilter, setActiveFilter] = useState<
+    "all" | "completed" | "pending"
+  >("all");
 
   const handleAddTask = () => {
     if (newTask.trim()) {
@@ -53,7 +55,7 @@ const TodoList: React.FC<TodoListProps> = ({
         <button
           onClick={() => handleFilterChange("all")}
           className={`px-3 py-1 rounded hover:bg-gray-300 ${
-              activeFilter === "all" ? "bg-blue-500 text-white" : "bg-gray-200"
+            activeFilter === "all" ? "bg-blue-500 text-white" : "bg-gray-200"
           }`}
         >
           All
@@ -61,7 +63,9 @@ const TodoList: React.FC<TodoListProps> = ({
         <button
           onClick={() => handleFilterChange("pending")}
           className={`px-3 py-1 rounded hover:bg-gray-300 ${
-              activeFilter === "pending" ? "bg-blue-500 text-white" : "bg-gray-200"
+            activeFilter === "pending"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           Pending
@@ -69,7 +73,9 @@ const TodoList: React.FC<TodoListProps> = ({
         <button
           onClick={() => handleFilterChange("completed")}
           className={`px-3 py-1 rounded hover:bg-gray-300 ${
-              activeFilter === "completed" ? "bg-blue-500 text-white" : "bg-gray-200"
+            activeFilter === "completed"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           Completed

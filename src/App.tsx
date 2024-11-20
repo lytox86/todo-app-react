@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TodoList from "./components/TodoList";
+import { addTask, fetchTasks, updateTask } from "./api";
 
 export interface Todo {
   id: number;
@@ -11,26 +12,37 @@ const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<"all" | "completed" | "pending">("all");
 
-  const addTodo = (name: string) => {
-    const newTodo: Todo = {
-      id: Date.now(),
-      name,
-      completed: false,
+  // Fetch tasks from API on component mount
+  useEffect(() => {
+    const getTasks = async () => {
+      const tasks = await fetchTasks();
+      setTodos(tasks);
     };
-    setTodos([...todos, newTodo]);
+    getTasks();
+  }, []);
+
+  // Add a new task
+  const handleAddTodo = async (name: string) => {
+    const newTask = await addTask(name);
+    setTodos((prev) => [...prev, newTask]);
   };
 
-  const toggleComplete = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-      ),
+  // Toggle task completion
+  const handleToggleComplete = async (id: number) => {
+    const task = todos.find((todo) => todo.id === id);
+    if (!task) return;
+
+    const updatedTask = await updateTask(id, { completed: !task.completed });
+    setTodos((prev) =>
+      prev.map((todo) => (todo.id === id ? updatedTask : todo)),
     );
   };
 
-  const updateTodo = (id: number, newName: string) => {
-    setTodos(
-      todos.map((todo) => (todo.id === id ? { ...todo, name: newName } : todo)),
+  // Update task name
+  const handleUpdateTodo = async (id: number, newName: string) => {
+    const updatedTask = await updateTask(id, { name: newName });
+    setTodos((prev) =>
+      prev.map((todo) => (todo.id === id ? updatedTask : todo)),
     );
   };
 
@@ -45,9 +57,9 @@ const App: React.FC = () => {
       <h1 className="text-2xl font-bold mb-5">Todo List</h1>
       <TodoList
         todos={filteredTodos}
-        addTodo={addTodo}
-        toggleComplete={toggleComplete}
-        updateTodo={updateTodo}
+        addTodo={handleAddTodo}
+        toggleComplete={handleToggleComplete}
+        updateTodo={handleUpdateTodo}
         setFilter={setFilter}
       />
     </div>
