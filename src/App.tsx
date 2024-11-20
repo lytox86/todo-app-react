@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import TodoList from "./components/TodoList";
-import { addTask, fetchTasks, updateTask } from "./api";
+import { useTodoStore } from "./useTodoStore";
 
 export interface Todo {
   id: number;
@@ -9,57 +9,38 @@ export interface Todo {
 }
 
 const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<"all" | "completed" | "pending">("all");
+  const {
+    todos,
+    filter,
+    error,
+    setFilter,
+    loadTodos,
+    addTodo,
+    toggleComplete,
+    updateTodo,
+  } = useTodoStore();
 
-  // Fetch tasks from API on component mount
+  // Fetch tasks when the component mounts
   useEffect(() => {
-    const getTasks = async () => {
-      const tasks = await fetchTasks();
-      setTodos(tasks);
-    };
-    getTasks();
-  }, []);
+    loadTodos().catch(console.error);
+  });
 
-  // Add a new task
-  const handleAddTodo = async (name: string) => {
-    const newTask = await addTask(name);
-    setTodos((prev) => [...prev, newTask]);
-  };
-
-  // Toggle task completion
-  const handleToggleComplete = async (id: number) => {
-    const task = todos.find((todo) => todo.id === id);
-    if (!task) return;
-
-    const updatedTask = await updateTask(id, { completed: !task.completed });
-    setTodos((prev) =>
-      prev.map((todo) => (todo.id === id ? updatedTask : todo)),
-    );
-  };
-
-  // Update task name
-  const handleUpdateTodo = async (id: number, newName: string) => {
-    const updatedTask = await updateTask(id, { name: newName });
-    setTodos((prev) =>
-      prev.map((todo) => (todo.id === id ? updatedTask : todo)),
-    );
-  };
-
+  // Filtered todos
   const filteredTodos = todos.filter((todo) => {
     if (filter === "completed") return todo.completed;
     if (filter === "pending") return !todo.completed;
-    return true;
+    return true; // "all"
   });
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
+    <div className="flex flex-col items-center py-10">
       <h1 className="text-2xl font-bold mb-5">Todo List</h1>
+      {error && <div className="text-red-500 mb-4">{error}</div>}
       <TodoList
         todos={filteredTodos}
-        addTodo={handleAddTodo}
-        toggleComplete={handleToggleComplete}
-        updateTodo={handleUpdateTodo}
+        addTodo={addTodo}
+        toggleComplete={toggleComplete}
+        updateTodo={updateTodo}
         setFilter={setFilter}
       />
     </div>
